@@ -15,21 +15,19 @@ window.FFLib = {
 
 		'getSectionId': function() {
 			let bodyClass = document.body.className.match(/(?:\s|^)(f([0-9]+))(?:(\s|$))/i);
-				let navUrl = document.querySelector(".nav a[href*='?f=']");
-				let locationmatch = window.FFLib.utilities.getUrlParameter("f");
-				if(locationmatch){
-					//In caso si trovi nell'url
-					return locationmatch;
-				}
-				else if(bodyClass){
-					bodyClass = bodyClass[2];
-					//In caso sia già stata trovata nel body fa il ritorno;
-					return parseInt(bodyClass); 
-				}
-				else if(navUrl){
-					//In caso ci sia l'url nel nav
-					return parseInt(navUrl.href.match(/[?&]f=([0-9]+)/i)[1]);
-				}
+			let navUrl = document.querySelector(".nav a[href*='?f=']");
+			let locationmatch = window.FFLib.utilities.getUrlParameter("f");
+			if (locationmatch) {
+				//In caso si trovi nell'url
+				return locationmatch;
+			} else if (bodyClass) {
+				bodyClass = bodyClass[2];
+				//In caso sia già stata trovata nel body fa il ritorno;
+				return parseInt(bodyClass);
+			} else if (navUrl) {
+				//In caso ci sia l'url nel nav
+				return parseInt(navUrl.href.match(/[?&]f=([0-9]+)/i)[1]);
+			}
 			return 0;
 		},
 		'getTopicId': function() {
@@ -86,45 +84,49 @@ window.FFLib = {
 		return (typeof scripts_admin !== 'undefined' && scripts_admin.indexOf(this.getUserId()) > -1) ? true : false;
 	},
 	'info': {
-		'forum' : {
-				'id' : ff_cid,
-				'layout' : (typeof ff_layout === "undefined" ? 3 : ff_layout),
-				'domain' : document.domain,
-				'isTopic' : /^((?!act=Post).)*[&?]t=[0-9]/g.test(location.href) ? true : false,
-				'isSection' : /^((?!act=Post).)*[&?]f=[0-9]/g.test(location.href) ? true : false,
-				'home': {
-					'getUserSection' : function(){
-						let arr  = [];
-						let a = document.querySelectorAll("body#board .board .big_list .zz .wbo a,.board  .zz  a[href*='MID=']");
-						if(a.length > 0){
-							for(var i = 0;i<a.length;i++){
-								let match = a[i].href.match(/[&?]MID=([0-9]+)/i);
-								if(match)arr.push(match[1]);
-							}
-						}
-						return arr;
-							
+		'forum': {
+			'id': ff_cid,
+			'layout': (typeof ff_layout === "undefined" ? 3 : ff_layout),
+			'domain': document.domain,
+			'isTopic': /^((?!act=Post).)*[&?]t=[0-9]/g.test(location.href) ? true : false,
+			'isSection': /^((?!act=Post).)*[&?]f=[0-9]/g.test(location.href) ? true : false,
+			'home': {
+				'getUserSection': function() {
+					let arr = [];
+					let a = document.querySelectorAll("body#board .board .big_list .zz .wbo a,.board  .zz  a[href*='MID=']");
+					if (a.length > 0) {
+						for (var i = 0; i < a.length; i++) {
+							let match = a[i].href.match(/[&?]MID=([0-9]+)/i);
+							if (match) arr.push(match[1]);
 						}
 					}
+					return arr;
+
+				}
+			}
+		},
+		'user': {
+			get id() {
+				ff_mid
 			},
-		'user' : {
-				'id' : ff_mid,
-				'avatar' : (function(){
-					if(ff_mid){
-						let avatar = document.querySelector("aside#Left.sidebar .user_details .avatar img,.menuwrap li:first-child .avatar img");
-						if(avatar)return avatar.src
-					}
-					return null;
-				})(),
-				'nickname' : (function(){
-					if(ff_mid){
-						let nicname = document.querySelector("aside#Left.sidebar .user_details .nickname,.menuwrap li:first-child .nick");
-						if(nicname)return nicname.innerText
-					}
-					return null;
-					
-				})(),
-				'auth_session': (function(){return window.FFLib.utilities.getCookie("auth_session");})
+			get avatar() {
+				if (ff_mid) {
+					let avatar = document.querySelector("aside#Left.sidebar .user_details .avatar img,.menuwrap li:first-child .avatar img");
+					if (avatar) return avatar.src
+				}
+				return null;
+			},
+			get nickname() {
+				if (ff_mid) {
+					let nicname = document.querySelector("aside#Left.sidebar .user_details .nickname,.menuwrap li:first-child .nick");
+					if (nicname) return nicname.innerText
+				}
+				return null;
+
+			},
+			get authSession() {
+				return window.FFLib.utilities.getCookie("auth_session");
+			}
 		},
 	},
 	'utilities': {
@@ -144,45 +146,43 @@ window.FFLib = {
 			var results = regex.exec(location.search);
 			return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
 		},
-		'getCookie' : function(name,all){
-			try{
+		'getCookie': function(name, all) {
+			try {
 				let cookie = document.cookie;
-				let match,parse,obj = {};
-				if(typeof all === "undefined"){
-					parse = new RegExp(name+"=([^;]+)","i");
+				let match, parse, obj = {};
+				if (typeof all === "undefined") {
+					parse = new RegExp(name + "=([^;]+)", "i");
 					match = cookie.match(parse);
-				}
-				else{
+				} else {
 					match = cookie.match(/[^ ;]+=[^;]+/gi);
-					for(var i = 0;i<match.length;i++){
+					for (var i = 0; i < match.length; i++) {
 						let explode = match[i].split("=");
 						obj[explode[0]] = explode[1]
 					}
 				}
-				return (typeof all === "undefined" && match !== null && match.length > 1 ?  match[1] : (typeof all !== "undefined" ? obj : null));
-			}
-			catch(e){
+				return (typeof all === "undefined" && match !== null && match.length > 1 ? match[1] : (typeof all !== "undefined" ? obj : null));
+			} catch (e) {
 				return false;
 			}
 		},
-		'setCookie' : function(name,value,seconds,circuits){
-			try{
-				if(!(name && value))return false;
-				let expires = "",domain = "";
-				if(typeof seconds === "number"){
+		'setCookie': function(name, value, seconds, circuits) {
+			try {
+				if (!(name && value)) return false;
+				let expires = "",
+					domain = "";
+				if (typeof seconds === "number") {
 					let date = new Date();
-					date.setSeconds(date.getSeconds()+seconds);
-					expires = ";expires="+date.toUTCString();
+					date.setSeconds(date.getSeconds() + seconds);
+					expires = ";expires=" + date.toUTCString();
 				}
-				if(circuits === true && location.host){
+				if (circuits === true && location.host) {
 					var c = location.host.match(/(forumfree|forumcommunity|blogfree)\.(it|net)$/gi);
-					if(c) domain=";domain="+c[0];
+					if (c) domain = ";domain=" + c[0];
 				}
-				let cookie = name+"="+value+expires+domain;
+				let cookie = name + "=" + value + expires + domain;
 				document.cookie = cookie;
 				return true;
-			}
-			catch(e){
+			} catch (e) {
 				return false;
 			}
 		}
