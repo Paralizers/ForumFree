@@ -85,7 +85,48 @@ window.FFLib = {
 	'isScriptAdmin': function() {
 		return (typeof scripts_admin !== 'undefined' && scripts_admin.indexOf(this.getUserId()) > -1) ? true : false;
 	},
-
+	'info': {
+		'forum' : {
+				'id' : ff_cid,
+				'layout' : (typeof ff_layout === "undefined" ? 3 : ff_layout),
+				'domain' : document.domain,
+				'isTopic' : /^((?!act=Post).)*[&?]t=[0-9]/g.test(location.href) ? true : false,
+				'isSection' : /^((?!act=Post).)*[&?]f=[0-9]/g.test(location.href) ? true : false,
+				'home': {
+					'getUserSection' : function(){
+						let arr  = [];
+						let a = document.querySelectorAll("body#board .board .big_list .zz .wbo a,.board  .zz  a[href*='MID=']");
+						if(a.length > 0){
+							for(var i = 0;i<a.length;i++){
+								let match = a[i].href.match(/[&?]MID=([0-9]+)/i);
+								if(match)arr.push(match[1]);
+							}
+						}
+						return arr;
+							
+						}
+					}
+			},
+		'user' : {
+				'id' : ff_mid,
+				'avatar' : (function(){
+					if(ff_mid){
+						let avatar = document.querySelector("aside#Left.sidebar .user_details .avatar img,.menuwrap li:first-child .avatar img");
+						if(avatar)return avatar.src
+					}
+					return null;
+				})(),
+				'nickname' : (function(){
+					if(ff_mid){
+						let nicname = document.querySelector("aside#Left.sidebar .user_details .nickname,.menuwrap li:first-child .nick");
+						if(nicname)return nicname.innerText
+					}
+					return null;
+					
+				})(),
+				'auth_session': (function(){return window.FFLib.utilities.getCookie("auth_session");})
+		},
+	},
 	'utilities': {
 		'uniqueItems': function(array, key) {
 			var flags = [],
@@ -103,7 +144,7 @@ window.FFLib = {
 			var results = regex.exec(location.search);
 			return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
 		},
-		getCookie : function(name,all){
+		'getCookie' : function(name,all){
 			try{
 				let cookie = document.cookie;
 				let match,parse,obj = {};
@@ -124,7 +165,7 @@ window.FFLib = {
 				return false;
 			}
 		},
-		setCookie: function(name,value,seconds,circuits){
+		'setCookie' : function(name,value,seconds,circuits){
 			try{
 				if(!(name && value))return false;
 				let expires = "",domain = "";
@@ -142,7 +183,7 @@ window.FFLib = {
 				return true;
 			}
 			catch(e){
-				retrun false;
+				return false;
 			}
 		}
 	}
