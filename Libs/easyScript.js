@@ -28,7 +28,7 @@ window.FFLib = {
 					section_id = document.querySelector('form input[name="f"][type="hidden"][value]').value;
 				}
 
-				if (section_id === null && getUrlParameter("f") !== "") {
+				if (section_id === null && window.FFLib.utilities.getUrlParameter("f") !== "") {
 					section_id = window.FFLib.utilities.getUrlParameter("f");
 				}
 
@@ -54,7 +54,7 @@ window.FFLib = {
 					}
 				}
 
-				if (section_id === null && getUrlParameter("t") !== "") {
+				if (section_id === null && window.FFLib.utilities.getUrlParameter("t") !== "") {
 					section_id = window.FFLib.utilities.getUrlParameter("t");
 				}
 
