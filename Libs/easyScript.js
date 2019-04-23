@@ -119,5 +119,6 @@ function ForumFreeLib() {
 		}
 	}
 }
+
 // Inizializzazione libreria
 window.FFLib = new ForumFreeLib();
