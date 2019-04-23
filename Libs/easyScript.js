@@ -102,6 +102,48 @@ window.FFLib = {
 			var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
 			var results = regex.exec(location.search);
 			return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+		},
+		getCookie : function(name,all){
+			try{
+				let cookie = document.cookie;
+				let match,parse,obj = {};
+				if(typeof all === "undefined"){
+					parse = new RegExp(name+"=([^;]+)","i");
+					match = cookie.match(parse);
+				}
+				else{
+					match = cookie.match(/[^ ;]+=[^;]+/gi);
+					for(var i = 0;i<match.length;i++){
+						let explode = match[i].split("=");
+						obj[explode[0]] = explode[1]
+					}
+				}
+				return (typeof all === "undefined" && match !== null && match.length > 1 ?  match[1] : (typeof all !== "undefined" ? obj : null));
+			}
+			catch(e){
+				return false;
+			}
+		},
+		setCookie: function(name,value,seconds,circuits){
+			try{
+				if(!(name && value))return false;
+				let expires = "",domain = "";
+				if(typeof seconds === "number"){
+					let date = new Date();
+					date.setSeconds(date.getSeconds()+seconds);
+					expires = ";expires="+date.toUTCString();
+				}
+				if(circuits === true && location.host){
+					var c = location.host.match(/(forumfree|forumcommunity|blogfree)\.(it|net)$/gi);
+					if(c) domain=";domain="+c[0];
+				}
+				let cookie = name+"="+value+expires+domain;
+				document.cookie = cookie;
+				return true;
+			}
+			catch(e){
+				retrun false;
+			}
 		}
 	}
 }
