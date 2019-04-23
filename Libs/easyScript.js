@@ -14,34 +14,25 @@ window.FFLib = {
 		},
 
 		'getSectionId': function() {
-			try {
-				var section_id = null;
-
-				if (section_id === null && document.body.getAttribute("class") != null) {
-					section_id = document.body.getAttribute("class").match(/f([0-9]+)/);
-					if (section_id !== null) {
-						section_id = section_id[1];
-					}
+			let bodyClass = document.body.className.match(/(?:\s|^)(f([0-9]+))(?:(\s|$))/i);
+				let navUrl = document.querySelector(".nav a[href*='?f=']");
+				let locationmatch = location.href.match(/[?&]f=([0-9]+)/i);
+				
+				
+				if(locationmatch){
+					//In caso si trovi nell'url
+					return locationmatch[1];
 				}
-
-				if (section_id === null && document.querySelector('form input[name="f"][type="hidden"][value]') !== null) {
-					section_id = document.querySelector('form input[name="f"][type="hidden"][value]').value;
+				else if(bodyClass){
+					bodyClass = bodyClass[2];
+					//In caso sia già stata trovata nel body fa il ritorno;
+					return parseInt(bodyClass); 
 				}
-
-				if (section_id === null && window.FFLib.utilities.getUrlParameter("f") !== "") {
-					section_id = window.FFLib.utilities.getUrlParameter("f");
+				else if(navUrl){
+					//In caso ci sia l'url nel nav
+					return parseInt(navUrl.href.match(/[?&]f=([0-9]+)/i)[1]);
 				}
-
-				section_id = Number(section_id);
-
-				if (isNaN(section_id)) {
-					return 0;
-				} else {
-					return section_id;
-				}
-			} catch (e) {
-				return 0;
-			}
+			return 0;
 		},
 		'getTopicId': function() {
 			try {
