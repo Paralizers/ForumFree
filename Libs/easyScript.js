@@ -85,8 +85,12 @@ window.FFLib = {
 	},
 	'info': {
 		'forum': {
-			'id': ff_cid,
-			'layout': (typeof ff_layout === "undefined" ? 3 : ff_layout),
+			get id() {
+				return ff_cid;
+			},
+			get layout() {
+				return (typeof ff_layout === "undefined" ? 3 : ff_layout);
+			},
 			'domain': document.domain,
 			'isTopic': /^((?!act=Post).)*[&?]t=[0-9]/g.test(location.href) ? true : false,
 			'isSection': /^((?!act=Post).)*[&?]f=[0-9]/g.test(location.href) ? true : false,
@@ -107,7 +111,7 @@ window.FFLib = {
 		},
 		'user': {
 			get id() {
-				ff_mid
+				return ff_mid;
 			},
 			get avatar() {
 				if (ff_mid) {
