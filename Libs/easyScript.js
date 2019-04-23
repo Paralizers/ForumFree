@@ -1,18 +1,5 @@
 window.FFLib = {
 	'location': {
-		'isTopic': function() {
-			return document.body.id === 'topic' ? true : false;
-		},
-		'isFullEditor': function() {
-			return document.body.id === 'send' ? true : false;
-		},
-		'isHome': function() {
-			return document.body.id === 'board' ? true : false;
-		},
-		'isForum': function() {
-			return document.body.id === 'forum' ? true : false;
-		},
-
 		'getSectionId': function() {
 			let bodyClass = document.body.className.match(/(?:\s|^)(f([0-9]+))(?:(\s|$))/i);
 			let navUrl = document.querySelector(".nav a[href*='?f=']");
@@ -58,31 +45,7 @@ window.FFLib = {
 		}
 	},
 
-	'isMobile': function() {
-		return typeof ff_layout === 'undefined' ? true : false
-	},
 
-	'getUserId': function() {
-		if (typeof ff_mid !== 'undefined') return ff_mid;
-		if (this.isMobile()) return Number(document.querySelector('aside#Left .nickname').href.split('Profile&MID=')[1]);
-		return Number(document.querySelector('.menuwrap > ul:nth-of-type(1) .menu > a').href.split('Profile&MID=')[1]);
-	},
-	'isUserInGroup': function(groupId) {
-		return document.body.classList.contains('g' + groupId) ? true : false;
-	},
-	'getUserGroup': function() {
-		for (var value of document.body.classList.values()) {
-			if (value.indexOf('g') === 0 && !isNaN(Number(value.replace('g', '')))) return value.replace('g', '');
-		}
-		return 0;
-	},
-
-	'isAdmin': function() {
-		return document.body.classList.contains('admin') ? true : false;
-	},
-	'isScriptAdmin': function() {
-		return (typeof scripts_admin !== 'undefined' && scripts_admin.indexOf(this.getUserId()) > -1) ? true : false;
-	},
 	'info': {
 		'forum': {
 			get id() {
@@ -92,8 +55,18 @@ window.FFLib = {
 				return (typeof ff_layout === "undefined" ? 3 : ff_layout);
 			},
 			'domain': document.domain,
-			'isTopic': /^((?!act=Post).)*[&?]t=[0-9]/g.test(location.href) ? true : false,
-			'isSection': /^((?!act=Post).)*[&?]f=[0-9]/g.test(location.href) ? true : false,
+			'isTopic': function() {
+				return document.body.id === 'topic' ? true : false;
+			},
+			'isFullEditor': function() {
+				return document.body.id === 'send' ? true : false;
+			},
+			'isHome': function() {
+				return document.body.id === 'board' ? true : false;
+			},
+			'isForum': function() {
+				return document.body.id === 'forum' ? true : false;
+			},
 			'home': {
 				'getUserSection': function() {
 					let arr = [];
@@ -111,7 +84,9 @@ window.FFLib = {
 		},
 		'user': {
 			get id() {
-				return ff_mid;
+				if (typeof ff_mid !== 'undefined') return ff_mid;
+				if (window.FFLib.utilities.info.forum.layout === 3) return Number(document.querySelector('aside#Left .nickname').href.split('Profile&MID=')[1]);
+				return Number(document.querySelector('.menuwrap > ul:nth-of-type(1) .menu > a').href.split('Profile&MID=')[1]);
 			},
 			get avatar() {
 				if (ff_mid) {
@@ -130,9 +105,25 @@ window.FFLib = {
 			},
 			get authSession() {
 				return window.FFLib.utilities.getCookie("auth_session");
+			},
+			'isAdmin': function() {
+				return document.body.classList.contains('admin') ? true : false;
+			},
+			'isScriptAdmin': function() {
+				return (typeof scripts_admin !== 'undefined' && scripts_admin.indexOf(this.getUserId()) > -1) ? true : false;
+			},
+			'isInGroup': function(groupId) {
+				return document.body.classList.contains('g' + groupId) ? true : false;
+			},
+			'getGroup': function() {
+				for (var value of document.body.classList.values()) {
+					if (value.indexOf('g') === 0 && !isNaN(Number(value.replace('g', '')))) return value.replace('g', '');
+				}
+				return 0;
 			}
 		},
 	},
+  
 	'utilities': {
 		'uniqueItems': function(array, key) {
 			var flags = [],
