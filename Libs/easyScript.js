@@ -16,7 +16,7 @@ window.FFLib = {
 		'getSectionId': function() {
 			let bodyClass = document.body.className.match(/(?:\s|^)(f([0-9]+))(?:(\s|$))/i);
 				let navUrl = document.querySelector(".nav a[href*='?f=']");
-				let locationmatch = window.FFLib.utilities.getUrlParameter(f);
+				let locationmatch = window.FFLib.utilities.getUrlParameter("f");
 				if(locationmatch){
 					//In caso si trovi nell'url
 					return locationmatch;
