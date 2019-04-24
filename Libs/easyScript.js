@@ -144,7 +144,7 @@ window.FFLib = {
 				return document.body.classList.contains('admin') ? true : false;
 			},
 			'isScriptAdmin': function() {
-				return (typeof scripts_admin !== 'undefined' && scripts_admin.indexOf(window.FFLib.info.user.id) > -1) ? true : false;
+				return (typeof window.FFScript.scripts_admin !== 'undefined' && window.FFScript.scripts_admin.indexOf(window.FFLib.info.user.id) > -1) ? true : false;
 			},
 			'isInGroup': function(groupId) {
 				return document.body.classList.contains('g' + groupId) ? true : false;
