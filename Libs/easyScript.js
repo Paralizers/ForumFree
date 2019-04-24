@@ -79,29 +79,29 @@ window.FFLib = {
 				return (typeof ff_layout === "undefined" ? 0 : ff_layout);
 			},
 			'isFFMobile': function() {
-				return window.FFLib.info.forum.layout === 0 ? true : false;
+				return window.FFLib.info.forum.layout === 0;
 			},
 			'isQuirks': function() {
-				return window.FFLib.info.forum.layout === 1 ? true : false;
+				return window.FFLib.info.forum.layout === 1;
 			},
 			'isStandard': function() {
-				return window.FFLib.info.forum.layout === 2 ? true : false;
+				return window.FFLib.info.forum.layout === 2;
 			},
 			'isResponsive': function() {
-				return window.FFLib.info.forum.layout === 3 ? true : false;
+				return window.FFLib.info.forum.layout === 3;
 			},
 			'domain': document.domain,
 			'isTopic': function() {
-				return document.body.id === 'topic' ? true : false;
+				return document.body.id === 'topic';
 			},
 			'isFullEditor': function() {
-				return document.body.id === 'send' ? true : false;
+				return document.body.id === 'send';
 			},
 			'isHome': function() {
-				return document.body.id === 'board' ? true : false;
+				return document.body.id === 'board';
 			},
 			'isForum': function() {
-				return document.body.id === 'forum' ? true : false;
+				return document.body.id === 'forum';
 			},
 			'home': {
 				'getUserLastTopic': function() {
