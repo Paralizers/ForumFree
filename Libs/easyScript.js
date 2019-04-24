@@ -17,7 +17,7 @@ window.FFLib = {
 			}
 			return 0;
 		},
-		get getSectionName(){
+		get currentSectionName(){
 			if(window.FFLib.location.getSectionId()){
 				let mtitleSez = window.FFLib.info.forum.isForum ? document.querySelector(".forum .mback .mtitle,.forum .top .title") : false;
 				if(mtitleSez) {
@@ -65,7 +65,7 @@ window.FFLib = {
 				return 0;
 			}
 		},
-		get getPostColor(){
+		get currentTopicPosts(){
 			return document.querySelectorAll(( window.FFLib.info.isFFMobile() ? ".topic .post .color td"  : (window.FFLib.info.isStandard() ? ".topic .post .color tr+tr td"  : ".topic .post tr .color")));
 		}
 	},
@@ -104,7 +104,7 @@ window.FFLib = {
 				return document.body.id === 'forum' ? true : false;
 			},
 			'home': {
-				'getUserSection': function() {
+				'getUserLastTopic': function() {
 					let arr = [];
 					let a = document.querySelectorAll("body#board .board .big_list .zz .wbo a,.board  .zz  a[href*='MID=']");
 					if (a.length > 0) {
