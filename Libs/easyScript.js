@@ -141,13 +141,13 @@ window.FFLib = {
 				return window.FFLib.utilities.getCookie("auth_session");
 			},
 			'isAdmin': function() {
-				return document.body.classList.contains('admin') ? true : false;
+				return document.body.classList.contains('admin');
 			},
 			'isScriptAdmin': function() {
-				return (typeof window.FFScript.scripts_admin !== 'undefined' && window.FFScript.scripts_admin.indexOf(window.FFLib.info.user.id) > -1) ? true : false;
+				return (typeof window.FFScript.scripts_admin !== 'undefined' && window.FFScript.scripts_admin.indexOf(window.FFLib.info.user.id) > -1);
 			},
 			'isInGroup': function(groupId) {
-				return document.body.classList.contains('g' + groupId) ? true : false;
+				return document.body.classList.contains('g' + groupId);
 			},
 			'getGroup': function() {
 				for (var value of document.body.classList.values()) {
