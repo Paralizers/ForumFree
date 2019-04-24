@@ -45,14 +45,25 @@ window.FFLib = {
 		}
 	},
 
-
 	'info': {
 		'forum': {
 			get id() {
 				return ff_cid;
 			},
 			get layout() {
-				return (typeof ff_layout === "undefined" ? 3 : ff_layout);
+				return (typeof ff_layout === "undefined" ? 0 : ff_layout);
+			},
+			'isFFMobile': function() {
+				return window.FFLib.utilities.info.forum.layout === 0 ? true : false;
+			},
+			'isQuirks': function() {
+				return window.FFLib.utilities.info.forum.layout === 1 ? true : false;
+			},
+			'isStandard': function() {
+				return window.FFLib.utilities.info.forum.layout === 2 ? true : false;
+			},
+			'isResponsive': function() {
+				return window.FFLib.utilities.info.forum.layout === 3 ? true : false;
 			},
 			'domain': document.domain,
 			'isTopic': function() {
@@ -78,14 +89,13 @@ window.FFLib = {
 						}
 					}
 					return arr;
-
 				}
 			}
 		},
 		'user': {
 			get id() {
 				if (typeof ff_mid !== 'undefined') return ff_mid;
-				if (window.FFLib.utilities.info.forum.layout === 3) return Number(document.querySelector('aside#Left .nickname').href.split('Profile&MID=')[1]);
+				if (window.FFLib.utilities.info.forum.layout === 0) return Number(document.querySelector('aside#Left .nickname').href.split('Profile&MID=')[1]);
 				return Number(document.querySelector('.menuwrap > ul:nth-of-type(1) .menu > a').href.split('Profile&MID=')[1]);
 			},
 			get avatar() {
@@ -101,7 +111,6 @@ window.FFLib = {
 					if (nicname) return nicname.innerText
 				}
 				return null;
-
 			},
 			get authSession() {
 				return window.FFLib.utilities.getCookie("auth_session");
