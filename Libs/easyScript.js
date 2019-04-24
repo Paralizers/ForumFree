@@ -17,6 +17,28 @@ window.FFLib = {
 			}
 			return 0;
 		},
+		get getSectionName(){
+			if(window.FFLib.location.getSectionId()){
+				let mtitleSez = window.FFLib.info.forum.isForum ? document.querySelector(".forum .mback .mtitle,.forum .top .title") : false;
+				if(mtitleSez) {
+					var mtitleh1 = mtitleSez.querySelector("h1,strong");
+					return mtitleh1 ? mtitleh1.innerHTML : mtitleSez.innerText;
+				}
+				if(window.FFLib.info.forum.isFFMobile()){
+					let buttonMobile = document.querySelector(".topic .bottom .buttons a[href*='?f='][data-name]");
+					if(typeof buttonMobile.dataset.name !== "undefined" && buttonMobile.dataset.name)return buttonMobile.dataset.name;
+				}
+				else if(window.FFLib.info.forum.isStandard()){
+					let currentForum = document.querySelector(".navsub > a[href*='?f=']");
+					if(currentForum) return currentForum.innerText;
+				}
+				else if(window.FFLib.info.forum.isQuirks()){
+					let currentForum = document.querySelector("a.current_forum[href*='?f=']");
+					if(currentForum) return currentForum.innerText;
+				}
+				return null;
+			}
+		},
 		'getTopicId': function() {
 			try {
 				var topic_id = null;
@@ -42,6 +64,9 @@ window.FFLib = {
 			} catch (e) {
 				return 0;
 			}
+		},
+		get getPostColor(){
+			return document.querySelectorAll(( window.FFLib.info.isFFMobile() ? ".topic .post .color td"  : (window.FFLib.info.isStandard() ? ".topic .post .color tr+tr td"  : ".topic .post tr .color")));
 		}
 	},
 
