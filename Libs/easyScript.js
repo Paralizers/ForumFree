@@ -214,6 +214,10 @@ window.FFLib = {
 			} catch (e) {
 				return false;
 			}
+		},
+		'removeTags': function(string, removeAll = false) {
+			string = string.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '').replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
+			return removeAll ? string.replace(/<\/?\w+[^>]*\/?>/g, '') : string;
 		}
 	}
 }
