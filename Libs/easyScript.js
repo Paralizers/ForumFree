@@ -215,9 +215,9 @@ window.FFLib = {
 				return false;
 			}
 		},
-		'removeTags': function(string, removeAll = false) {
-			string = string.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '').replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
-			return removeAll ? string.replace(/<\/?\w+[^>]*\/?>/g, '') : string;
+		'removeTags': function(string, tags = ['script', 'style']) {
+			let reg = new RegExp('<\(/\?\('+tags.join('\|')+'\)\[\^>\]\*>\)', 'gi');
+			return string.replace(reg, '&lt;$1')
 		}
 	}
 }
