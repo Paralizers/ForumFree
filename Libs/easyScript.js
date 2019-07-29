@@ -218,6 +218,9 @@ window.FFLib = {
 		'removeTags': function(string, tags = ['script', 'style']) {
 			let reg = new RegExp('<\(/\?\('+tags.join('\|')+'\)\[\^>\]\*>\)', 'gi');
 			return string.replace(reg, '&lt;$1')
+		},
+		'removeJsInTags': function(string) {
+			return string.replace(/<([^>]*(on[^"]*=(.*?)|javascript)[^>]*>)/gi, '&lt;$1');
 		}
 	}
 }
