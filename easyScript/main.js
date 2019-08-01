@@ -659,7 +659,7 @@ window.easyScript = {
 		script.hidden_script = Boolean(Number(script.hidden_script));
 		script.new_layout = Boolean(Number(script.new_layout));
 		script.old_layout = Boolean(Number(script.old_layout));
-		var regex=/^whitelist\[([\w\.,]+)\]( )?/i;
+		var regex=/^whitelist\[([\w\.,]+)\](\s+)?/i;
 		var matchWhitelistDomain = script.name.match(regex);
 		
 		var getsIdForum = [];
