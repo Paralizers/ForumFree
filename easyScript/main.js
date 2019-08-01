@@ -630,9 +630,9 @@ window.easyScript = {
 			script.new_layout == true && window.easyScript.layoutForum == "standard" ) &&
 			(script.hidden_script && getsIdForum.length >0 && (
 				getsIdForum.indexOf(window.easyScript.idForum) !== -1 ||
-				getsIdForum.indexOf("FFU"+window.userSession.forumfree.user.id) !== -1 || 
-				getsIdForum.indexOf("FCU"+window.userSession.forumcommunity.user.id) !== -1 ||
-				getsIdForum.indexOf("BFU"+window.userSession.blogfree.user.id) !== -1
+				getsIdForum.indexOf("FFU"+(typeof window.userSession.forumfree !== "undefined" ? window.userSession.forumfree.user.id : 0)) !== -1 || 
+				getsIdForum.indexOf("FCU"+(typeof window.userSession.forumcommunity !== "undefined" ? window.userSession.forumcommunity.user.id : 0)) !== -1 ||
+				getsIdForum.indexOf("BFU"+(typeof window.userSession.blogfree !== "undefined" ? window.userSession.blogfree.user.id : 0)) !== -1
 				) ||
 				! script.hidden_script
 			)
