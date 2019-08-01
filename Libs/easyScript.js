@@ -220,7 +220,7 @@ window.FFLib = {
 			return string.replace(reg, '&lt;$1')
 		},
 		'removeJsInTags': function(string) {
-			return string.replace(/<([^>]*(on\w+=(.*?)|javascript)[^>]*>)/gi, '&lt;$1');
+			return string.replace(/<([^>]*(on\w+(\s+)?=(.*?)|javascript)[^>]*>)/gi, '&lt;$1');
 		}
 	}
 }
