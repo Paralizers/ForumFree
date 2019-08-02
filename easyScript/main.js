@@ -90,7 +90,7 @@ $(document).on("click", "*[data-name][data-listinstalled][data-sid]", function (
 
     $('body').append(launchNewModal({
         id: 'my-scripts' + jqthis.attr("data-sid"),
-        title: "Amministrazione - " + jqthis.attr("data-namereplace"),
+        title: "Amministrazione - " + jqthis.attr("data-name"),
         body: html,
         close: 1,
         dialogClass: 'modal-dialog modal-lg modal-dialog-centered'
@@ -592,7 +592,6 @@ window.easyScript = {
             xhrFields: xhrFields,
             data: postData
         }).done(function (data) {
-
             data = (typeof data === "string") ? JSON.parse(data) : data;
             if (typeof (data.error) !== "undefined") {
                 alert('Errore! Sicuro di essere loggato nella piattaforma del forum ed essere almeno amministratore aggiuntivo? (' + data.error + ')');
@@ -609,37 +608,16 @@ window.easyScript = {
 
 
     createSingleScriptHtml: function (isDesktopInstalled, isMobileUninstalled, isFav, script) {
-
         var html = '';
         script.hidden_script = Boolean(Number(script.hidden_script));
         script.new_layout = Boolean(Number(script.new_layout));
         script.old_layout = Boolean(Number(script.old_layout));
-        var regex = /^whitelist\[([\w\.,]+)\](\s+)?/i;
-        var matchWhitelistDomain = script.name.match(regex);
-
-        var getsIdForum = [];
-        var nameScript = script.name;
-        if (matchWhitelistDomain) {
-            nameScript = script.name.replace(regex, "");
-            getsIdForum = matchWhitelistDomain[1].split(",")
-        }
-
         script.responsive_layout = Boolean(Number(script.responsive_layout));
         script.mobile = Boolean(Number(script.mobile));
         script.demo = Boolean(Number(script.demo));
         var isFav = Boolean(Number(isFav));
         var schema = JSON.parse(script.settings_schema);
-        if ((window.FFDevs.ffDevId() == 'ff7482873' || window.FFDevs.ffDevId() == script.forum) || (script.old_layout == true && window.easyScript.layoutForum == "quirks" ||
-            script.new_layout == true && window.easyScript.layoutForum == "standard") &&
-            (script.hidden_script && getsIdForum.length > 0 && (
-                    getsIdForum.indexOf(window.easyScript.idForum) !== -1 || window.userSession && (
-                        getsIdForum.indexOf("FFU" + (typeof window.userSession.forumfree !== "undefined" ? window.userSession.forumfree.user.id : 0)) !== -1 ||
-                        getsIdForum.indexOf("FCU" + (typeof window.userSession.forumcommunity !== "undefined" ? window.userSession.forumcommunity.user.id : 0)) !== -1 ||
-                        getsIdForum.indexOf("BFU" + (typeof window.userSession.blogfree !== "undefined" ? window.userSession.blogfree.user.id : 0)) !== -1
-                    )) ||
-                !script.hidden_script
-            )
-        ) {
+        if ((!script.hidden_script) || (window.FFDevs.ffDevId() == 'ff7482873' || window.FFDevs.ffDevId() == script.forum)) {
             copy = JSON.parse(JSON.stringify(script));
             delete copy["scriptId"];
             delete copy["forum"];
@@ -653,7 +631,7 @@ window.easyScript = {
 
             html += '<div class="card-header">';
             html += '<a rel="nofollow" href="' + script.public_link + '" target="_blank">';
-            html += '<div class="ss_name">' + nameScript + '</div>';
+            html += '<div class="ss_name">' + script.name + '</div>';
             html += '</a>';
             if (script.sdesc.trim() != "") {
                 html += '<div class="card-body p-1 m-0">';
@@ -695,7 +673,7 @@ window.easyScript = {
             html += (script.demo ? '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons ss_demo" data-demo="' + script.name.replace('"', '\'') + '" data-sid="' + script.scriptId + '"><i class="fa fa-eye" aria-hidden="true"></i></button>' : '');
 
             if ((window.FFDevs.ffDevId() == 'ff7482873' || window.FFDevs.ffDevId() == script.forum)) {
-                html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons ss_info" data-stab="' + script.tab + '" data-name="' + script.name.replace('"', '\'') + '" data-namereplace="' + nameScript.replace('"', '\'') + '" data-listinstalled="' + (typeof window.scriptStats["s" + script.scriptId] !== "undefined" ? btoa(JSON.stringify(window.scriptStats["s" + script.scriptId])) : btoa(JSON.stringify([]))) + '" data-sid="' + script.scriptId + '"><i class="fa fa-info" aria-hidden="true"></i></button>';
+                html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons ss_info" data-stab="' + script.tab + '" data-name="' + script.name.replace('"', '\'') + '" data-listinstalled="' + (typeof window.scriptStats["s" + script.scriptId] !== "undefined" ? btoa(JSON.stringify(window.scriptStats["s" + script.scriptId])) : btoa(JSON.stringify([]))) + '" data-sid="' + script.scriptId + '"><i class="fa fa-info" aria-hidden="true"></i></button>';
             } else if (window.FFDevs.isDev() !== false) {
                 html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons ss_target"><a target="_blank" href="https://ffboard.forumfree.it/?pag=easyscript&evd=' + script.scriptId + '&s_tab=' + script.tab + '"><i class="fa fa-link" aria-hidden="true"></i></a></button>';
             }
@@ -778,6 +756,7 @@ window.easyScript = {
             isDesktopInstalled = (installedList.indexOf(list[i].scriptId) !== -1) || (installedList.indexOf("" + list[i].scriptId + "") !== -1);
             isMobileUninstalled = (uninstalledMobileList.indexOf(list[i].scriptId) !== -1) || (uninstalledMobileList.indexOf("" + list[i].scriptId + "") !== -1);
             isFav = (queryEvd.indexOf(list[i].scriptId) !== -1);
+
             if (typeof html[list[i].tab] !== "undefined") {
                 if (!window.FFDevs.isDevOf(list[i].forum)) {
                     html[list[i].tab].html = html[list[i].tab].html + this.createSingleScriptHtml(isDesktopInstalled, isMobileUninstalled, isFav, list[i]);
@@ -870,43 +849,15 @@ window.easyScript = {
             auth: window.nowInfo.auth,
             act: 'getList'
         }, function (data) {
-            console.log(data);
             window.easyScript.ffSecData = null;
-            var prefix = "";
             if (!/^(FF|FC|BF)([0-9]+)$/i.test(window.nowInfo.forum)) {
                 if (window.nowInfo.forum.indexOf('.forumfree.it') !== -1) {
                     var url = "https://easyscript.forumfree.it/?api=" + window.nowInfo.forum;
-                    prefix = "FF";
                 } else if (window.nowInfo.forum.indexOf('.blogfree.net') !== -1) {
                     var url = "https://easyscript.blogfree.net/?api=" + window.nowInfo.forum;
-                    prefix = "BF"
                 } else if (window.nowInfo.forum.indexOf('forumcommunity.net') !== -1) {
                     var url = "https://easyscript.forumcommunity.net/?api=" + window.nowInfo.forum;
-                    prefix = "FC";
                 }
-
-
-                window.easyScript.ffScriptData = data.scriptList.filter(function (el) {
-                    return el.hidden_script == "0";
-                });
-
-                window.scriptStats = (typeof data.stats === "undefined") ? [] : data.stats;
-                data.uninstalledMobileList = [];
-                for (var i = 0; i < data.scriptSettings.length; i++) {
-                    window.nowInfo.settings["script_" + data.scriptSettings[i]["scriptId"]] = data.scriptSettings[i]["settings"];
-                    if (!Boolean(Number(data.scriptSettings[i]["mobile"]))) {
-                        data.uninstalledMobileList.push(data.scriptSettings[i]["scriptId"]);
-                    }
-                }
-
-                $('.current_dom').html(window.nowInfo.forum); // Dominio corrente: <span id="current_dom"> // </span> ( <strong onclick="location['rel'+'oad']()" style="cursor:pointer;color:#FFF">Cambia dominio</strong> ) <br> <br>
-
-                window.easyScript.hideLoading();
-
-
-                $('#script_manager').html(window.FFDevs.generateTabs());
-                $('#script_manager').html($('#script_manager').html() + '<div style="clear: both;"></div>');
-
 
                 $.ajax({
                     url: url,
@@ -915,55 +866,71 @@ window.easyScript = {
                     xhrFields: {
                         withCredentials: true
                     }
-                }).done(function (dataForum) {
-
-                    dataForum = (typeof dataForum === "string") ? JSON.parse(dataForum) : dataForum;
-                    window.easyScript.idForum = prefix + dataForum.home.idForum;
-                    window.easyScript.layoutForum = dataForum.home.layout;
-                    window.easyScript.ffSecData = dataForum.home.sections;
-                    window.easyScript.ffGroupData = dataForum.home.groups;
-                    insertScript(data);
-
+                }).done(function (data) {
+                    data = (typeof data === "string") ? JSON.parse(data) : data;
+                    window.easyScript.ffSecData = data.home.sections;
+                    window.easyScript.ffGroupData = data.home.groups;
                 });
             }
 
-            var insertScript = function (data) {
-                var html = window.easyScript.createScriptListHtml(data.installedList, data.uninstalledMobileList, data.scriptList);
-                for (var key in html) {
-                    if (!html.hasOwnProperty(key)) {
-                        continue;
-                    }
-                    $('#script_manager').html($('#script_manager').html() + '<div class="tab_script" id="tab_' + key + '" style="display:none">' + html[key].html + '</div>');
-                }
-                var queryURL = that.queryParams();
-                var queryTab = queryURL["s_tab"];
+            window.easyScript.ffScriptData = data.scriptList.filter(function (el) {
+                return el.hidden_script == "0";
+            });
 
-                if (that.init_tab !== false) {
-                    that.changeTab(that.init_tab);
+            window.scriptStats = (typeof data.stats === "undefined") ? [] : data.stats;
+            data.uninstalledMobileList = [];
+            for (var i = 0; i < data.scriptSettings.length; i++) {
+                window.nowInfo.settings["script_" + data.scriptSettings[i]["scriptId"]] = data.scriptSettings[i]["settings"];
+                if (!Boolean(Number(data.scriptSettings[i]["mobile"]))) {
+                    data.uninstalledMobileList.push(data.scriptSettings[i]["scriptId"]);
+                }
+            }
+
+            $('.current_dom').html(window.nowInfo.forum); // Dominio corrente: <span id="current_dom"> // </span> ( <strong onclick="location['rel'+'oad']()" style="cursor:pointer;color:#FFF">Cambia dominio</strong> ) <br> <br>
+
+            window.easyScript.hideLoading();
+
+
+            $('#script_manager').html(window.FFDevs.generateTabs());
+            $('#script_manager').html($('#script_manager').html() + '<div style="clear: both;"></div>');
+
+            var html = window.easyScript.createScriptListHtml(data.installedList, data.uninstalledMobileList, data.scriptList);
+
+            for (var key in html) {
+                if (!html.hasOwnProperty(key)) {
+                    continue;
+                }
+                $('#script_manager').html($('#script_manager').html() + '<div class="tab_script" id="tab_' + key + '" style="display:none">' + html[key].html + '</div>');
+            }
+
+            var queryURL = that.queryParams();
+            var queryTab = queryURL["s_tab"];
+
+            if (that.init_tab !== false) {
+                that.changeTab(that.init_tab);
+            } else {
+                if (typeof queryTab !== "undefined") {
+                    that.changeTab(queryTab);
                 } else {
-                    if (typeof queryTab !== "undefined") {
-                        that.changeTab(queryTab);
-                    } else {
-                        that.changeTab("ffb");
-                    }
-                }
-
-                $("#script_manager .tab_script").each(function (index) {
-                    if ($(this).find('.script_showcase').html().trim() === '') {
-                        $("#lab_" + $(this).attr('id').replace('tab_', '')).remove();
-                        $(this).remove();
-                    }
-                });
-
-                if ($('.lab_script .active').length === 0) {
                     that.changeTab("ffb");
                 }
+            }
 
-                window.easyScript.showManager();
-
-                if (window.FFDevs.isDev() !== false) {
-                    window.easyScript.setGenericButton('Crea nuovo Script', 'window.easyScript.newScript()');
+            $("#script_manager .tab_script").each(function (index) {
+                if ($(this).find('.script_showcase').html().trim() === '') {
+                    $("#lab_" + $(this).attr('id').replace('tab_', '')).remove();
+                    $(this).remove();
                 }
+            });
+
+            if ($('.lab_script .active').length === 0) {
+                that.changeTab("ffb");
+            }
+
+            window.easyScript.showManager();
+
+            if (window.FFDevs.isDev() !== false) {
+                window.easyScript.setGenericButton('Crea nuovo Script', 'window.easyScript.newScript()');
             }
         });
     },
