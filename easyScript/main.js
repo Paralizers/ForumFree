@@ -607,108 +607,131 @@ window.easyScript = {
     },
 
 
-    createSingleScriptHtml: function (isDesktopInstalled, isMobileUninstalled, isFav, script) {
-        var html = '';
-        script.hidden_script = Boolean(Number(script.hidden_script));
-        script.new_layout = Boolean(Number(script.new_layout));
-        script.old_layout = Boolean(Number(script.old_layout));
-        script.responsive_layout = Boolean(Number(script.responsive_layout));
-        script.mobile = Boolean(Number(script.mobile));
-        script.demo = Boolean(Number(script.demo));
-        var isFav = Boolean(Number(isFav));
-        var schema = JSON.parse(script.settings_schema);
-        if ((!script.hidden_script) || (window.FFDevs.ffDevId() == 'ff7482873' || window.FFDevs.ffDevId() == script.forum)) {
-            copy = JSON.parse(JSON.stringify(script));
-            delete copy["scriptId"];
-            delete copy["forum"];
+    createSingleScriptHtml: function(isDesktopInstalled, isMobileUninstalled, isFav, script) {
+		
+		var html = '';
+		script.hidden_script = Boolean(Number(script.hidden_script));
+		script.new_layout = Boolean(Number(script.new_layout));
+		script.old_layout = Boolean(Number(script.old_layout));
+		var regex=/^whitelist\[([\w\.,]+)\](\s+)?/i;
+		var matchWhitelistDomain = script.name.match(regex);
+		
+		var getsIdForum = [];
+		var nameScript = script.name;
+		if(matchWhitelistDomain){
+			nameScript = script.name.replace(regex,"");
+			getsIdForum= matchWhitelistDomain[1].split(",")
+		}
+		
+		script.responsive_layout = Boolean(Number(script.responsive_layout));
+		script.mobile = Boolean(Number(script.mobile));
+		script.demo = Boolean(Number(script.demo));
+		var isFav = Boolean(Number(isFav));
+		var schema = JSON.parse(script.settings_schema);
+		if ((window.FFDevs.ffDevId() == 'ff7482873' || window.FFDevs.ffDevId() == script.forum) || (script.old_layout == true && window.easyScript.layoutForum == "quirks" ||
+			script.new_layout == true && window.easyScript.layoutForum == "standard" ) &&
+			(script.hidden_script && getsIdForum.length >0 && (
+				getsIdForum.indexOf(window.easyScript.idForum) !== -1 || window.userSession  &&(
+				getsIdForum.indexOf("FFU"+(typeof window.userSession.forumfree !== "undefined" ? window.userSession.forumfree.user.id : 0)) !== -1 || 
+				getsIdForum.indexOf("FCU"+(typeof window.userSession.forumcommunity !== "undefined" ? window.userSession.forumcommunity.user.id : 0)) !== -1 ||
+				getsIdForum.indexOf("BFU"+(typeof window.userSession.blogfree !== "undefined" ? window.userSession.blogfree.user.id : 0)) !== -1
+				)) ||
+				! script.hidden_script
+			)
+		   ) {
+			copy = JSON.parse(JSON.stringify(script));
+			delete copy["scriptId"];
+			delete copy["forum"];
 
-            script.preview = (script.preview.trim() !== "") ? script.preview : 'https://i.imgur.com/q17Hrdo.png';
+			script.preview = (script.preview.trim() !== "") ? script.preview : 'https://i.imgur.com/q17Hrdo.png';
 
-            html += '<div class="col-sm-12 col-md-6 d-flex align-items-stretch box script_fav_' + (isFav).toString() + ' script_hidden_' + (script.hidden_script).toString() + ' script_' + script.scriptId + ((script.js.trim() === "") ? ' script_manual_install' : '') + ((typeof schema.type !== "undefined" && ((schema.type === "object" && typeof schema.properties !== "undefined") || (schema.type === "array" && typeof schema.items !== "undefined"))) ? '' : ' script_nosettings') + (isDesktopInstalled ? ' script_installed' : '') + (script.mobile == 1 ? " script_mobile" : "") + (isMobileUninstalled ? ' script_mobile_uninstalled' : '') + ' script_type_' + script.script_type + (script.deps.length === 0 ? "" : ' script_have_dep script_dep' + (script.deps.join(" script_dep"))) + '" data-sid="' + script.scriptId + '" data-deps="' + (script.deps.join(",")) + '" data-info="' + btoa(JSON.stringify(copy)) + '">';
-
-
-            html += '<div class="card mb-4 shadow-sm">';
-
-            html += '<div class="card-header">';
-            html += '<a rel="nofollow" href="' + script.public_link + '" target="_blank">';
-            html += '<div class="ss_name">' + script.name + '</div>';
-            html += '</a>';
-            if (script.sdesc.trim() != "") {
-                html += '<div class="card-body p-1 m-0">';
-                html += '<p class="card-text">' + script.sdesc + '</p>';
-                html += '</div>';
-            }
-            html += '</div>';
-
-
-            html += '<div class="card-img">';
-            html += '<img class="card-img-center img-fluid" src="' + script.preview + '" data-holder-rendered="true">';
-
-            html += '</div>';
-
-
-            html += '<div class="card-footer">';
-            html += '<div class="d-flex justify-content-between align-items-center">';
-            html += '<div class="btn-group">';
+			html += '<div class="col-sm-12 col-md-6 d-flex align-items-stretch box script_fav_' + (isFav).toString() + ' script_hidden_' + (script.hidden_script).toString() + ' script_' + script.scriptId + ((script.js.trim() === "") ? ' script_manual_install' : '') + ((typeof schema.type !== "undefined" && ((schema.type === "object" && typeof schema.properties !== "undefined") || (schema.type === "array" && typeof schema.items !== "undefined"))) ? '' : ' script_nosettings') + (isDesktopInstalled ? ' script_installed' : '') + (script.mobile == 1 ? " script_mobile" : "") + (isMobileUninstalled ? ' script_mobile_uninstalled' : '') + ' script_type_' + script.script_type + (script.deps.length === 0 ? "" : ' script_have_dep script_dep' + (script.deps.join(" script_dep"))) + '" data-sid="' + script.scriptId + '" data-deps="' + (script.deps.join(",")) + '" data-info="' + btoa(JSON.stringify(copy)) + '">';
 
 
-            html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons manual_install"><a href="' + script.public_link + '" target="_blank">Guida</a></button>';
 
-            html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons install" onclick="window.easyScript.installScript(this.parentNode.parentNode.parentNode.parentNode.parentNode)">Installa</button>';
-            html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons uninstall" onclick="window.easyScript.uninstallScript(this.parentNode.parentNode.parentNode.parentNode.parentNode)">Disinstalla</button>';
+			html += '<div class="card mb-4 shadow-sm">';
 
-            /*
-            html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons uninstall_mobile" onclick="window.easyScript.disableMobileScript(this.parentNode.parentNode)"><i class="fa fa-mobile" aria-hidden="true"></i></button>';
-            html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons install_mobile" onclick="window.easyScript.enableMobileScript(this.parentNode.parentNode)"><i class="fa fa-mobile" aria-hidden="true"></i></button>';
-            */
-
-            if (typeof schema.easyscript !== "undefined") {
-                if (typeof schema.easyscript.generator !== "undefined") {
-                    html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons ss_generator" data-sid="' + script.scriptId + '" data-generator="' + schema.easyscript.generator + '">Generatore</button>';
-                }
-            }
-
-            html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons ss_settings_edit" onclick="window.easyScript.settingScript(this.parentNode.parentNode.parentNode.parentNode.parentNode)"><i class="fa fa-cog" aria-hidden="true"></i></button>';
-
-            html += (script.demo ? '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons ss_demo" data-demo="' + script.name.replace('"', '\'') + '" data-sid="' + script.scriptId + '"><i class="fa fa-eye" aria-hidden="true"></i></button>' : '');
-
-            if ((window.FFDevs.ffDevId() == 'ff7482873' || window.FFDevs.ffDevId() == script.forum)) {
-                html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons ss_info" data-stab="' + script.tab + '" data-name="' + script.name.replace('"', '\'') + '" data-listinstalled="' + (typeof window.scriptStats["s" + script.scriptId] !== "undefined" ? btoa(JSON.stringify(window.scriptStats["s" + script.scriptId])) : btoa(JSON.stringify([]))) + '" data-sid="' + script.scriptId + '"><i class="fa fa-info" aria-hidden="true"></i></button>';
-            } else if (window.FFDevs.isDev() !== false) {
-                html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons ss_target"><a target="_blank" href="https://ffboard.forumfree.it/?pag=easyscript&evd=' + script.scriptId + '&s_tab=' + script.tab + '"><i class="fa fa-link" aria-hidden="true"></i></a></button>';
-            }
-
-            /*
-            if ((window.FFDevs.ffDevId() == 'ff7482873' || window.FFDevs.ffDevId() == script.forum)) {
-                html += '<div class="ss_buttons ss_settings_tools">';
-                html += '<span class="ss_target"><a target="_blank" href="https://ffboard.forumfree.it/?pag=easyscript&evd=' + script.scriptId + '&s_tab=' + script.tab + '"><i class="fa fa-external-link" aria-hidden="true"></i></a></span>&nbsp;&nbsp;';
-                html += (typeof window.scriptStats["s" + script.scriptId] !== "undefined" ? '<span class="ss_info"><i data-listinstalled="' + btoa(JSON.stringify(window.scriptStats["s" + script.scriptId])) + '" data-sid="' + script.scriptId + '" class="fa fa-info-circle" aria-hidden="true"></i></span>&nbsp;&nbsp;' : "");
-                html += '<span class="ss_edit" onclick="window.easyScript.editScript(this.parentNode.parentNode.parentNode)"><i class="fa fa-pencil"></i></span>&nbsp;&nbsp;';
-                html += '<span class="ss_remove" onclick="window.easyScript.submitDelScript(this.parentNode.parentNode.parentNode)"><i class="fa fa-times"></i></span>';
-                html += '</div> ';
-                var permissions = ['link', 'edit', 'delete', 'stats'];
-
-            } else if (window.FFDevs.isDev() !== false) {
-                html += '<div class="ss_buttons ss_settings_tools">';
-                html += '<span class="ss_target"><a target="_blank" href="https://ffboard.forumfree.it/?pag=easyscript&evd=' + script.scriptId + '&s_tab=' + script.tab + '"><i class="fa fa-external-link" aria-hidden="true"></i></a></span>&nbsp;&nbsp;';
-                html += '</div> ';
-                var permissions = ['link'];
-            }
-            */
+			html += '<div class="card-header">';
+			html += '<a rel="nofollow" href="' + script.public_link + '" target="_blank">';
+			html += '<div class="ss_name">' + nameScript + '</div>';
+			html += '</a>'; 
+			if(script.sdesc.trim() != "") {
+				html += '<div class="card-body p-1 m-0">';
+				html += '<p class="card-text">' + script.sdesc + '</p>';
+				html += '</div>'; 
+			}
+			html += '</div>'; 
 
 
-            html += '</div>';
-            html += '<small class="text-muted"></small>';
+			html += '<div class="card-img">'; 
+			html += '<img class="card-img-center img-fluid" src="' + script.preview + '" data-holder-rendered="true">'; 
 
-            html += '</div>';
-            html += '</div>';
+			html += '</div>'; 
 
 
-            html += '</div>';
-            html += '</div>';
-        }
-        return html;
-    },
+			html += '<div class="card-footer">';
+			html += '<div class="d-flex justify-content-between align-items-center">';
+			html += '<div class="btn-group">';
+
+
+			 
+			html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons manual_install"><a href="' + script.public_link + '" target="_blank">Guida</a></button>';
+
+			html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons install" onclick="window.easyScript.installScript(this.parentNode.parentNode.parentNode.parentNode.parentNode)">Installa</button>';
+			html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons uninstall" onclick="window.easyScript.uninstallScript(this.parentNode.parentNode.parentNode.parentNode.parentNode)">Disinstalla</button>';
+
+			/*
+			html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons uninstall_mobile" onclick="window.easyScript.disableMobileScript(this.parentNode.parentNode)"><i class="fa fa-mobile" aria-hidden="true"></i></button>';
+			html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons install_mobile" onclick="window.easyScript.enableMobileScript(this.parentNode.parentNode)"><i class="fa fa-mobile" aria-hidden="true"></i></button>';
+			*/
+
+			if(typeof schema.easyscript !== "undefined") {
+				if(typeof schema.easyscript.generator !== "undefined") {
+					html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons ss_generator" data-sid="'+script.scriptId+'" data-generator="' + schema.easyscript.generator + '">Generatore</button>';
+				}
+			}
+			
+			html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons ss_settings_edit" onclick="window.easyScript.settingScript(this.parentNode.parentNode.parentNode.parentNode.parentNode)"><i class="fa fa-cog" aria-hidden="true"></i></button>';
+			
+			html += (script.demo ? '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons ss_demo" data-demo="' + script.name.replace('"','\'') + '" data-sid="' + script.scriptId + '"><i class="fa fa-eye" aria-hidden="true"></i></button>' : '');
+
+			if ((window.FFDevs.ffDevId() == 'ff7482873' || window.FFDevs.ffDevId() == script.forum)) {
+				html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons ss_info" data-stab="' + script.tab + '" data-name="' + script.name.replace('"','\'') + '" data-namereplace="' + nameScript.replace('"','\'') + '" data-listinstalled="' + (typeof window.scriptStats["s" + script.scriptId] !== "undefined" ? btoa(JSON.stringify(window.scriptStats["s" + script.scriptId])) : btoa(JSON.stringify([]))) + '" data-sid="' + script.scriptId + '"><i class="fa fa-info" aria-hidden="true"></i></button>';
+			} else if (window.FFDevs.isDev() !== false) {
+				html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons ss_target"><a target="_blank" href="https://ffboard.forumfree.it/?pag=easyscript&evd=' + script.scriptId + '&s_tab=' + script.tab + '"><i class="fa fa-link" aria-hidden="true"></i></a></button>';
+			}
+
+			/*
+			if ((window.FFDevs.ffDevId() == 'ff7482873' || window.FFDevs.ffDevId() == script.forum)) {
+				html += '<div class="ss_buttons ss_settings_tools">';
+				html += '<span class="ss_target"><a target="_blank" href="https://ffboard.forumfree.it/?pag=easyscript&evd=' + script.scriptId + '&s_tab=' + script.tab + '"><i class="fa fa-external-link" aria-hidden="true"></i></a></span>&nbsp;&nbsp;';
+				html += (typeof window.scriptStats["s" + script.scriptId] !== "undefined" ? '<span class="ss_info"><i data-listinstalled="' + btoa(JSON.stringify(window.scriptStats["s" + script.scriptId])) + '" data-sid="' + script.scriptId + '" class="fa fa-info-circle" aria-hidden="true"></i></span>&nbsp;&nbsp;' : "");
+				html += '<span class="ss_edit" onclick="window.easyScript.editScript(this.parentNode.parentNode.parentNode)"><i class="fa fa-pencil"></i></span>&nbsp;&nbsp;';
+				html += '<span class="ss_remove" onclick="window.easyScript.submitDelScript(this.parentNode.parentNode.parentNode)"><i class="fa fa-times"></i></span>';
+				html += '</div> ';
+				var permissions = ['link', 'edit', 'delete', 'stats'];
+				
+			} else if (window.FFDevs.isDev() !== false) {
+				html += '<div class="ss_buttons ss_settings_tools">';
+				html += '<span class="ss_target"><a target="_blank" href="https://ffboard.forumfree.it/?pag=easyscript&evd=' + script.scriptId + '&s_tab=' + script.tab + '"><i class="fa fa-external-link" aria-hidden="true"></i></a></span>&nbsp;&nbsp;';
+				html += '</div> ';
+				var permissions = ['link'];
+			}
+			*/
+
+			
+			html += '</div>';
+			html += '<small class="text-muted"></small>';
+
+			html += '</div>';
+			html += '</div>';
+
+
+			html += '</div>';
+			html += '</div>';
+		}
+		return html;
+	},
     createScriptListHtml: function (installedList, uninstalledMobileList, list) {
         var queryURL = this.queryParams();
         var queryEvd = queryURL["evd"];
@@ -850,12 +873,16 @@ window.easyScript = {
             act: 'getList'
         }, function (data) {
             window.easyScript.ffSecData = null;
+	    var prefix = "";
             if (!/^(FF|FC|BF)([0-9]+)$/i.test(window.nowInfo.forum)) {
                 if (window.nowInfo.forum.indexOf('.forumfree.it') !== -1) {
+		    prefix = "FF";
                     var url = "https://easyscript.forumfree.it/?api=" + window.nowInfo.forum;
                 } else if (window.nowInfo.forum.indexOf('.blogfree.net') !== -1) {
+		    prefix = "BF";
                     var url = "https://easyscript.blogfree.net/?api=" + window.nowInfo.forum;
                 } else if (window.nowInfo.forum.indexOf('forumcommunity.net') !== -1) {
+		    prefix = "FC"
                     var url = "https://easyscript.forumcommunity.net/?api=" + window.nowInfo.forum;
                 }
 
@@ -866,10 +893,13 @@ window.easyScript = {
                     xhrFields: {
                         withCredentials: true
                     }
-                }).done(function (data) {
-                    data = (typeof data === "string") ? JSON.parse(data) : data;
-                    window.easyScript.ffSecData = data.home.sections;
-                    window.easyScript.ffGroupData = data.home.groups;
+                }).done(function (dataForum) {
+                    dataForum = (typeof dataForum === "string") ? JSON.parse(dataForum) : dataForum;
+                    window.easyScript.idForum = prefix+dataForum.home.idForum;
+		    window.easyScript.layoutForum = dataForum.home.layout;
+	            window.easyScript.ffSecData = dataForum.home.sections;
+		    window.easyScript.ffGroupData = dataForum.home.groups;
+		    insertScript(data);
                 });
             }
 
@@ -893,7 +923,7 @@ window.easyScript = {
 
             $('#script_manager').html(window.FFDevs.generateTabs());
             $('#script_manager').html($('#script_manager').html() + '<div style="clear: both;"></div>');
-
+	  var insertScript = function(data){
             var html = window.easyScript.createScriptListHtml(data.installedList, data.uninstalledMobileList, data.scriptList);
 
             for (var key in html) {
@@ -932,6 +962,7 @@ window.easyScript = {
             if (window.FFDevs.isDev() !== false) {
                 window.easyScript.setGenericButton('Crea nuovo Script', 'window.easyScript.newScript()');
             }
+	  }
         });
     },
 
