@@ -628,10 +628,11 @@ window.easyScript = {
 		script.demo = Boolean(Number(script.demo));
 		var isFav = Boolean(Number(isFav));
 		var schema = JSON.parse(script.settings_schema);
+	        var idForum = typeof window.easyScript.idForum !== "undefined" ? window.easyScript.idForum : 0;
 		if ((window.FFDevs.ffDevId() == 'ff7482873' || window.FFDevs.ffDevId() == script.forum) || (script.old_layout == true && window.easyScript.layoutForum == "quirks" ||
-			script.new_layout == true && window.easyScript.layoutForum == "standard" ) &&
+			script.new_layout == true && window.easyScript.layoutForum == "standard" || idForum == 0) &&
 			(script.hidden_script && getsIdForum.length >0 && (
-				getsIdForum.indexOf(window.easyScript.idForum) !== -1 || window.userSession  &&(
+				getsIdForum.indexOf(idForum) !== -1 || window.userSession  &&(
 				getsIdForum.indexOf("FFU"+(typeof window.userSession.forumfree !== "undefined" ? window.userSession.forumfree.user.id : 0)) !== -1 || 
 				getsIdForum.indexOf("FCU"+(typeof window.userSession.forumcommunity !== "undefined" ? window.userSession.forumcommunity.user.id : 0)) !== -1 ||
 				getsIdForum.indexOf("BFU"+(typeof window.userSession.blogfree !== "undefined" ? window.userSession.blogfree.user.id : 0)) !== -1
@@ -874,6 +875,7 @@ window.easyScript = {
         }, function (data) {
             window.easyScript.ffSecData = null;
 	    var prefix = "";
+		var userChoseScript = false;
             if (!/^(FF|FC|BF)([0-9]+)$/i.test(window.nowInfo.forum)) {
                 if (window.nowInfo.forum.indexOf('.forumfree.it') !== -1) {
 		    prefix = "FF";
@@ -901,7 +903,7 @@ window.easyScript = {
 		    window.easyScript.ffGroupData = dataForum.home.groups;
 		    insertScript(data);
                 });
-            }
+            }else{userChoseScript=true;}
 
             window.easyScript.ffScriptData = data.scriptList.filter(function (el) {
                 return el.hidden_script == "0";
@@ -963,6 +965,7 @@ window.easyScript = {
                 window.easyScript.setGenericButton('Crea nuovo Script', 'window.easyScript.newScript()');
             }
 	  }
+	  if(userChoseScript)insertScript(data);
         });
     },
 
