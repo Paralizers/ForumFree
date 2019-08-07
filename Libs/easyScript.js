@@ -103,6 +103,9 @@ window.FFLib = {
 			'isForum': function() {
 				return document.body.id === 'forum';
 			},
+			'isProfile': function() {
+				return document.body.id === 'profile' || /Profile&MID=(\d+)/.test(document.location.href);
+			},
 			'home': {
 				'getUserLastTopic': function() {
 					let arr = [];
@@ -221,6 +224,22 @@ window.FFLib = {
 		},
 		'removeJsInTags': function(string) {
 			return string.replace(/<([^>]*(on\w+(\s+)?=(.*?)|javascript)[^>]*>)/gi, '&lt;$1');
+		},
+		'dateFormat': function(string, format = 'Y-m-d H:i:s') {
+			let date = new Date(string),
+			    symbols = {
+				    'Y': date.getFullYear(),
+				    'n': date.getMonth() + 1,
+				    'j': date.getDate(),
+				    'G': date.getHours(),
+				    'i': date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes(),
+				    's': date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()
+			    };
+			symbols['m'] = symbols.n < 10 ? '0' + symbols.n : symbols.n;
+			symbols['d'] = symbols.j < 10 ? '0' + symbols.j : symbols.j;
+			symbols['H'] = symbols.G < 10 ? '0' + symbols.G : symbols.G;
+			let reg = new RegExp(Object.keys(symbols).join('\|'), 'g');
+			return format.replace(reg, function(r){return symbols[r];});
 		}
 	}
 }
