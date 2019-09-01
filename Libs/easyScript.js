@@ -172,10 +172,10 @@ window.FFLib = {
 			}
 			return output;
 		},
-		'getUrlParameter': function(name) {
+		'getUrlParameter': function(name, url = null) {
 			name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
 			var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-			var results = regex.exec(location.search);
+			var results = regex.exec(url !== null ? url : location.search);
 			return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
 		},
 		'getCookie': function(name, all) {
