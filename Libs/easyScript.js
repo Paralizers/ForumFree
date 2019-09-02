@@ -6,7 +6,7 @@ window.FFLib = {
 			let locationmatch = window.FFLib.utilities.getUrlParameter("f");
 			if (locationmatch) {
 				//In caso si trovi nell'url
-				return locationmatch;
+				return parseInt(locationmatch);
 			} else if (bodyClass) {
 				bodyClass = bodyClass[2];
 				//In caso sia già stata trovata nel body fa il ritorno;
