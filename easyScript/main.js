@@ -685,7 +685,7 @@ window.easyScript = {
 			html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons uninstall_mobile" onclick="window.easyScript.disableMobileScript(this.parentNode.parentNode)"><i class="fa fa-mobile" aria-hidden="true"></i></button>';
 			html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons install_mobile" onclick="window.easyScript.enableMobileScript(this.parentNode.parentNode)"><i class="fa fa-mobile" aria-hidden="true"></i></button>';
 			*/
-			console.log(schema.easyscript);
+			//console.log(schema.easyscript);
 			if(typeof schema.easyscript !== "undefined") {
 				if(typeof schema.easyscript.generator !== "undefined") {
 					html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons ss_generator" data-sid="'+script.scriptId+'" data-generator="' + schema.easyscript.generator + '">Generatore</button>';
@@ -733,7 +733,7 @@ window.easyScript = {
 		}
 		return html;
 	},
-    createScriptListHtml: function (installedList, uninstalledMobileList, list) {
+    createScriptListHtml: function (installedList, uninstalledMobileList, list,onlyDev) {
         var queryURL = this.queryParams();
         var queryEvd = queryURL["evd"];
         if (typeof queryEvd !== "undefined") {
@@ -775,18 +775,17 @@ window.easyScript = {
             }
             return 5;
         });
-
         for (var i = 0, isDesktopInstalled, isMobileUninstalled, isFav; i < list.length; i++) {
             isDesktopInstalled = (installedList.indexOf(list[i].scriptId) !== -1) || (installedList.indexOf("" + list[i].scriptId + "") !== -1);
             isMobileUninstalled = (uninstalledMobileList.indexOf(list[i].scriptId) !== -1) || (uninstalledMobileList.indexOf("" + list[i].scriptId + "") !== -1);
             isFav = (queryEvd.indexOf(list[i].scriptId) !== -1);
             if (typeof html[list[i].tab] !== "undefined") {
-                if (!window.FFDevs.isDevOf(list[i].forum)) {
-                    html[list[i].tab].html = html[list[i].tab].html + this.createSingleScriptHtml(isDesktopInstalled, isMobileUninstalled, isFav, list[i]);
+                if (! onlyDev && !window.FFDevs.isDevOf(list[i].forum) || isDesktopInstalled && onlyDev && window.FFDevs.ffDevId() == list[i].forum) {
+                    html[list[i].tab].html = html[list[i].tab].html + this.createSingleScriptHtml(isDesktopInstalled, isMobileUninstalled, isFav, list[i],onlyDev);
                 }
             }
         }
-
+		
         for (var key in html) {
             if (!html.hasOwnProperty(key)) {
                 continue;
@@ -904,7 +903,6 @@ window.easyScript = {
                 });
             }else{userChoseScript=true;}
 		 window.easyScript.getData = data;
-		console.log(window.easyScript.getData);
             window.easyScript.ffScriptData = data.scriptList.filter(function (el) {
                 return el.hidden_script == "0";
             });
@@ -926,8 +924,8 @@ window.easyScript = {
             $('#script_manager').html(window.FFDevs.generateTabs());
             $('#script_manager').html($('#script_manager').html() + '<div style="clear: both;"></div>');
 	  var insertScript = function(data){
-            var html = window.easyScript.createScriptListHtml(data.installedList, data.uninstalledMobileList, data.scriptList);
-
+            var html = window.easyScript.createScriptListHtml(data.installedList, data.uninstalledMobileList, data.scriptList,(data.isDev && ! data.isAdmin ? true : false));
+			
             for (var key in html) {
                 if (!html.hasOwnProperty(key)) {
                     continue;
@@ -960,7 +958,17 @@ window.easyScript = {
             }
 
             window.easyScript.showManager();
-
+			var onlyDev = (data.isDev && ! data.isAdmin ? true : false);
+			if(onlyDev){
+				var c = document.querySelectorAll(".nav-easyscript > li");
+				for(var i =0;i<c.length;i++){
+					if (! document.querySelector("#tab_"+c[i].id.replace("lab_","")+" .row > *")){
+						c[i].parentNode.removeChild(c[i])
+					}
+				}
+				var k=document.querySelector(".nav-easyscript > li");
+				if(k)k.click();
+			}
             if (window.FFDevs.isDev() !== false) {
                 window.easyScript.setGenericButton('Crea nuovo Script', 'window.easyScript.newScript()');
             }
