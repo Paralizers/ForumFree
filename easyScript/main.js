@@ -685,7 +685,7 @@ window.easyScript = {
 			html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons uninstall_mobile" onclick="window.easyScript.disableMobileScript(this.parentNode.parentNode)"><i class="fa fa-mobile" aria-hidden="true"></i></button>';
 			html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons install_mobile" onclick="window.easyScript.enableMobileScript(this.parentNode.parentNode)"><i class="fa fa-mobile" aria-hidden="true"></i></button>';
 			*/
-			console.log(chema.easyscript);
+			console.log(schema.easyscript);
 			if(typeof schema.easyscript !== "undefined") {
 				if(typeof schema.easyscript.generator !== "undefined") {
 					html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons ss_generator" data-sid="'+script.scriptId+'" data-generator="' + schema.easyscript.generator + '">Generatore</button>';
