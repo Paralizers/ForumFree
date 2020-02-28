@@ -607,7 +607,7 @@ window.easyScript = {
     },
 
 
-    createSingleScriptHtml: function(isDesktopInstalled, isMobileUninstalled, isFav, script) {
+    createSingleScriptHtml: function(isDesktopInstalled, isMobileUninstalled, isFav, script,isOnlyModify) {
 		
 		var html = '';
 		script.hidden_script = Boolean(Number(script.hidden_script));
@@ -678,14 +678,14 @@ window.easyScript = {
 			 
 			html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons manual_install"><a href="' + script.public_link + '" target="_blank">Guida</a></button>';
 
-			html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons install" onclick="window.easyScript.installScript(this.parentNode.parentNode.parentNode.parentNode.parentNode)">Installa</button>';
-			html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons uninstall" onclick="window.easyScript.uninstallScript(this.parentNode.parentNode.parentNode.parentNode.parentNode)">Disinstalla</button>';
+			if(!isOnlyModify)html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons install" onclick="window.easyScript.installScript(this.parentNode.parentNode.parentNode.parentNode.parentNode)">Installa</button>';
+			if(!isOnlyModify)html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons uninstall" onclick="window.easyScript.uninstallScript(this.parentNode.parentNode.parentNode.parentNode.parentNode)">Disinstalla</button>';
 
 			/*
 			html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons uninstall_mobile" onclick="window.easyScript.disableMobileScript(this.parentNode.parentNode)"><i class="fa fa-mobile" aria-hidden="true"></i></button>';
 			html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons install_mobile" onclick="window.easyScript.enableMobileScript(this.parentNode.parentNode)"><i class="fa fa-mobile" aria-hidden="true"></i></button>';
 			*/
-
+			console.log(chema.easyscript);
 			if(typeof schema.easyscript !== "undefined") {
 				if(typeof schema.easyscript.generator !== "undefined") {
 					html += '<button type="button" class="btn btn-sm btn-outline-secondary ss_buttons ss_generator" data-sid="'+script.scriptId+'" data-generator="' + schema.easyscript.generator + '">Generatore</button>';
@@ -780,7 +780,6 @@ window.easyScript = {
             isDesktopInstalled = (installedList.indexOf(list[i].scriptId) !== -1) || (installedList.indexOf("" + list[i].scriptId + "") !== -1);
             isMobileUninstalled = (uninstalledMobileList.indexOf(list[i].scriptId) !== -1) || (uninstalledMobileList.indexOf("" + list[i].scriptId + "") !== -1);
             isFav = (queryEvd.indexOf(list[i].scriptId) !== -1);
-
             if (typeof html[list[i].tab] !== "undefined") {
                 if (!window.FFDevs.isDevOf(list[i].forum)) {
                     html[list[i].tab].html = html[list[i].tab].html + this.createSingleScriptHtml(isDesktopInstalled, isMobileUninstalled, isFav, list[i]);
@@ -904,7 +903,8 @@ window.easyScript = {
 		    insertScript(data);
                 });
             }else{userChoseScript=true;}
-
+		 window.easyScript.getData = data;
+		console.log(window.easyScript.getData);
             window.easyScript.ffScriptData = data.scriptList.filter(function (el) {
                 return el.hidden_script == "0";
             });
